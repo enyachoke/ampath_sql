@@ -1,19 +1,17 @@
-USE amrs;
 select 
-	t4.uuid as visit_uuid,
-    t1.uuid as encounter_uuid,
-	t1.encounter_datetime,
-	t1.encounter_type,
-	t1.location_id,
-    t2.concept_id,
-    t2.value_numeric,
-    t3.name
-	from encounter t1
-    LEFT JOIN obs t2
-	ON t1.encounter_id=t2.encounter_id
-    LEFT JOIN field t3
-    ON t2.concept_id=t3.concept_id
-	LEFT JOIN visit t4
-    ON t1.visit_id=t4.visit_id
-    where t1.encounter_type in (1,2,3,4,10,13,14,15,17,19,22,23,26,32,33,43,47,21)
-    and t3.concept_id IN (5089, 5088 , 5090,1342,5085,5087)
+	t1.uuid as visit_uuid,
+	t2.uuid as encounter_uuid,
+	t3.value_numeric,
+	t3.value_text,
+	t4.name
+	from amrs.visit t1
+	left join amrs.encounter t2
+		on t1.patient_id = t2.patient_id
+	left join amrs.obs t3
+		on t2.encounter_id = t3.encounter_id
+	left join amrs.field t4
+		on t4.concept_id = t3.concept_id
+	where t1.uuid = "0d7cc5fb-c75f-4c2d-980a-afeaa917e0df" 
+	and date_format(t2.encounter_datetime,'%dd/%mm/%YYYY')=date_format(t1.date_started,'%dd/%mm/%YYYY')
+	group by t3.uuid
+	order by t2.encounter_id;
